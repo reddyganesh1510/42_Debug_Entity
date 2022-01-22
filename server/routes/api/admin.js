@@ -4,6 +4,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const Admin = require("../../models/Admin");
+const User = require("../../models/User");
+const adminMiddleWare = require("../../middlewares/admin");
+const { Contract, ipfs, web3 } = require("../../config/web3");
 
 // @route   -  POST /xcb/api/auth/admin
 // @desc    -  Login Admin
@@ -107,6 +110,92 @@ router.post("/register", async (req, res) => {
       errors: [{ msg: "Server error" }],
     });
   }
+});
+
+router.post("/verify", [adminMiddleWare], async (req, res) => {
+  const respObj = { msg: "Verify User By Admin", success: false };
+  try {
+    const { userId, documentId, isValid } = req.body;
+    let user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ ...respObj, errors: [{ msg: `User not found` }] });
+    }
+    const accounts = await web3.eth.getAccounts();
+    const documentIndex = user.documents.findIndex(
+      (item) => item._id === documentId
+    );
+    const contractResponse = await Contract.methods
+      .validate(id, documentIndex + 1, isValid)
+      .send({ from: accounts[0] });
+    user.documents[documentIndex].isValid = isValid;
+    await user.save();
+    return res.status(201).json({
+      ...respObj,
+      success: true,
+      content: { msg: "Document Updated Successfully" },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ...respObj,
+      errors: [{ msg: "Server error" }],
+    });
+  }
+});
+
+router.get("/getAllUnverified", [adminMiddleWare], async (req, res) => {
+  const respObj = { msg: "Get All Un Verified Users By Admin", success: false };
+  try {
+    const users = await User.find({});
+    let docs = [];
+    for (let user of users) {
+      const { firstName, lastName, email } = user;
+      for (let doc of user.documents) {
+        if (!doc.isValid) {
+          docs.push({
+            email,
+            firstName,
+            lastName,
+            doc,
+          });
+        }
+      }
+    }
+    return res.status(201).json({
+      ...respObj,
+      success: true,
+      content: { docs },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ...respObj,
+      errors: [{ msg: "Server error" }],
+    });
+  }
+});
+
+router.post("/getFile", [adminMiddleWare], async (req, res) => {
+  const { ipfsHash, userId } = req.body;
+  let user = await User.findById(userId);
+
+  if (!user) {
+    return res
+      .status(404)
+      .json({ ...respObj, errors: [{ msg: `User not found` }] });
+  }
+  const resp = await ipfs.cat(ipfsHash);
+  const encryptedData = resp.toString("hex");
+  const decryptedData = decryptData({
+    keyObjStr: user.key,
+    encryptedStr: encryptedData,
+  });
+  res.status(200).json({
+    content: {
+      decryptedData,
+    },
+  });
 });
 
 module.exports = router;

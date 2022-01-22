@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
         errors: [{ msg: "Admin not found" }],
       });
     }
-
+    req.admin = admin;
     next();
   } catch (err) {
     return res.status(401).json({

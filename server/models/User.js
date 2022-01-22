@@ -50,6 +50,9 @@ const UserSchema = new mongoose.Schema({
       data: {
         type: String,
       },
+      isValid: {
+        type: Boolean,
+      },
     },
   ],
 });

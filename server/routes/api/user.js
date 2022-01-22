@@ -5,16 +5,16 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 
 const User = require("../../models/User");
-const { Contract, ipfs } = require("../../config/web3");
+const { Contract, ipfs, web3 } = require("../../config/web3");
 const authMiddleware = require("../../middlewares/auth");
 const uploadMiddleware = require("../../middlewares/upload");
-const MyWalletAddress = "0x6c38De408d6a71b2F672666f203ecDAFC2A00Dea";
+// const MyWalletAddress = "0x6c38De408d6a71b2F672666f203ecDAFC2A00Dea";
 const {
   generateKey,
   encryptData,
   decryptData,
 } = require("../../utils/cryptoAes");
-// const MyWalletAddress = "0x0E365665a0f07b68847e33F7A224E6f3068bF33d";
+const MyWalletAddress = "0x0E365665a0f07b68847e33F7A224E6f3068bF33d";
 
 router.get("/", [authMiddleware], async (req, res) => {
   const respObj = { msg: "Get User", success: false };
@@ -65,28 +65,27 @@ router.post("/upload", [authMiddleware], async (req, res) => {
       keyObjStr: user.key,
       dataStr: document,
     });
-    const decryptedData = decryptData({
-      keyObjStr: user.key,
-      encryptedStr: encryptedData,
-    });
+
     const ipfsResponse = await ipfs.add(Buffer.from(encryptedData, "hex"));
     const { path, hash, size } = ipfsResponse[0];
     console.log(ipfsResponse);
     // add to image collection
+    const accounts = await web3.eth.getAccounts();
+
     const contractResponse = await Contract.methods
       .upload(id, user.documents.length + 1, hash)
-      .send({ from: MyWalletAddress });
+      .send({ from: accounts[0] });
 
     const newDocumentObj = {
       label,
-      liveImage,
+      //   liveImage,
       ipfsHash: hash,
       ipfsAddress: `https://gateway.ipfs.io/ipfs/${hash}`,
       transactionHash: contractResponse.transactionHash,
       blockHash: contractResponse.blockHash,
       blockNumber: contractResponse.blockNumber,
-      imageUrl,
-      data: userDocumentData,
+      //   imageUrl,
+      data: encryptedData,
     };
     user.documents.push(newDocumentObj);
     await user.save();
@@ -105,6 +104,30 @@ router.post("/upload", [authMiddleware], async (req, res) => {
       errors: [{ msg: "Server error" }],
     });
   }
+});
+
+router.post("/getFile", [authMiddleware], async (req, res) => {
+  const resp = await ipfs.cat("QmR2ruiCFUdP2xPFpVnGkacv6gxyCumbDP9HDJSj3Be9sj");
+  const encryptedData = resp.toString("hex");
+  const {
+    user: { id },
+  } = req;
+  let user = await User.findById(id);
+
+  if (!user) {
+    return res
+      .status(404)
+      .json({ ...respObj, errors: [{ msg: `User not found` }] });
+  }
+  const decryptedData = decryptData({
+    keyObjStr: user.key,
+    encryptedStr: encryptedData,
+  });
+  res.status(200).json({
+    content: {
+      decryptedData,
+    },
+  });
 });
 
 // @route   -  POST /xcb/api/auth/user
