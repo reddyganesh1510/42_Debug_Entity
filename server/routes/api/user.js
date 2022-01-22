@@ -51,7 +51,6 @@ router.post("/upload", [authMiddleware], async (req, res) => {
       user: { id },
     } = req;
     const { label } = req.body;
-    console.log(req.body);
     const document = req.body.document;
 
     let user = await User.findById(id);
@@ -77,6 +76,7 @@ router.post("/upload", [authMiddleware], async (req, res) => {
     const contractResponse = await Contract.methods
       .upload(id, user.documents.length + 1, hash)
       .send({ from: MyWalletAddress });
+
     const newDocumentObj = {
       label,
       liveImage,
@@ -96,13 +96,6 @@ router.post("/upload", [authMiddleware], async (req, res) => {
         path,
         hash,
         size,
-      },
-    });
-    res.status(200).json({
-      ...respObj,
-      content: {
-        encryptedData,
-        decryptedData,
       },
     });
   } catch (error) {
