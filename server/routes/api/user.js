@@ -107,7 +107,8 @@ router.post("/upload", [authMiddleware], async (req, res) => {
 });
 
 router.post("/getFile", [authMiddleware], async (req, res) => {
-  const resp = await ipfs.cat("QmR2ruiCFUdP2xPFpVnGkacv6gxyCumbDP9HDJSj3Be9sj");
+  const { ipfsHash } = req.body;
+  const resp = await ipfs.cat(ipfsHash);
   const encryptedData = resp.toString("hex");
   const {
     user: { id },
