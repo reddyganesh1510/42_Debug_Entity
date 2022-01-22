@@ -1,7 +1,7 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
@@ -18,9 +18,12 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  CardHeader,
+  Box
 } from '@mui/material';
 // components
+import { styled } from '@mui/material/styles';
 import Page from '../components/Page';
 import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
@@ -28,6 +31,8 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import USERLIST from '../_mocks_/user';
+import account from '../_mocks_/account';
+import { getUserData } from '../utils/helpers';
 
 // ----------------------------------------------------------------------
 
@@ -71,6 +76,14 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+const AccountStyle = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(2, 2.5),
+  borderRadius: theme.shape.borderRadiusSm,
+  backgroundColor: theme.palette.grey[200]
+}));
+
 export default function User() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -78,6 +91,15 @@ export default function User() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const data = getUserData();
+
+    if (data) {
+      setUserData(data);
+    }
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -147,6 +169,25 @@ export default function User() {
             New User
           </Button>
         </Stack>
+
+        <Card />
+
+        <Card sx={{ my: 2 }}>
+          <CardHeader title="Profile" />
+          <AccountStyle>
+            <Avatar sx={{ width: 125, height: 125 }} src={account.photoURL} alt="photoURL" />
+            <Box sx={{ m: 10 }}>
+              <Typography variant="h3" sx={{ color: 'text.primary' }}>
+                {userData?.firstName
+                  ? `${userData.firstName}  ${userData.lastName}`
+                  : account.displayName}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {account.role}
+              </Typography>
+            </Box>
+          </AccountStyle>
+        </Card>
 
         <Card>
           <UserListToolbar
