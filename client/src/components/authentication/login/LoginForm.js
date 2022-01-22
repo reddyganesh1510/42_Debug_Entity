@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import axios from 'axios';
-import { postHelper, setToken, routes } from '../../../utils/helpers';
+import {postHelper, setToken, routes, getHelper, setUserData} from '../../../utils/helpers';
 
 // ----------------------------------------------------------------------
 
@@ -43,9 +43,13 @@ export default function LoginForm() {
       try {
         const res = await axios.request(postHelper({ email, password }, routes.userLogin));
         const { data } = res;
-        setToken(data.content.token);
-
-        navigate('/dashboard');
+        const profileResult = await axios.request(getHelper(routes.userProfile, data.content.token));
+        const profile = profileResult.data
+        if(profile.content) {
+          setUserData(profile.content);
+          setToken(data.content.token);
+          navigate('/dashboard');
+        }
       } catch (err) {
         console.log('Error', err, err.body);
       }

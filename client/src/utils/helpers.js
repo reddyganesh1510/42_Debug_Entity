@@ -13,16 +13,17 @@ const postHelper = (obj, route) => ({
   url: route,
   data: obj,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'x-auth-token': getToken()
   }
 });
 
-const getHelper = (route) => ({
+const getHelper = (route, token = getToken()) => ({
   method: 'GET',
   url: route,
   headers: {
     'Content-Type': 'application/json',
-    'x-auth-token': getToken()
+    'x-auth-token': token
   }
 })
 
