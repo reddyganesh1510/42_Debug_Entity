@@ -17,6 +17,9 @@ const imageSchema = mongoose.Schema(
     blockHash: {
       type: String,
     },
+    imageUrl: {
+      type: String,
+    },
   },
   {
     timestamps: true,

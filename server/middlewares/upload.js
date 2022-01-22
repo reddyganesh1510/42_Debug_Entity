@@ -30,6 +30,6 @@ let upload = multer({
     fileSize: 1024 * 1024 * 1, // Maximum allowed size of each file is 1 mb
     files: 1, // Allow Maximum 1 files
   },
-}).array("badge", 1);
+}).array("document", 1);
 
 module.exports = upload;

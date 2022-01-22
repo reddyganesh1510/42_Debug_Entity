@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
 
   try {
     const decodedPayload = jwt.verify(token, process.env.JWT_SECRET);
-    req.admin = decodedPayload.admin;
+    req.user = decodedPayload.user;
     next();
   } catch (err) {
     return res.status(401).json({
