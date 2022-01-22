@@ -13,13 +13,13 @@ app.use(cors());
 app.use(express.json({ extended: false }));
 
 // Make storage files publically accesible
-app.use("/xcb/docstore", express.static(path.resolve("./docstore")));
+app.use("/documents/docstore", express.static(path.resolve("./docstore")));
 
 // API Test Route
-app.get("/xcb", (req, res, next) => res.send("XCB API running"));
+app.get("/documents", (req, res, next) => res.send("Documents API running"));
 
 //REST Endpoints
-app.use("/", require("./routes"));
+app.use("/documents", require("./routes"));
 
 // Server Listen
 const PORT = process.env.PORT || 8006;
