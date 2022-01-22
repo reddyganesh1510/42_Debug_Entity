@@ -12,9 +12,10 @@ import ColorPreview from '../../ColorPreview';
 // ----------------------------------------------------------------------
 
 const ProductImgStyle = styled('img')({
-  top: 0,
-  width: '100%',
-  height: '100%',
+  top: '2rem',
+  left: '2rem',
+  width: '80%',
+  height: '80%',
   objectFit: 'cover',
   position: 'absolute'
 });
