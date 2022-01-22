@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "baseUrl": "../../material-kit-react"
+    "baseUrl": "./src"
   },
   "include": [
     "src/**/*"
