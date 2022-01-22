@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import homeFill from '@iconify/icons-eva/home-fill';
 import personFill from '@iconify/icons-eva/person-fill';
 import settings2Fill from '@iconify/icons-eva/settings-2-fill';
@@ -11,7 +11,7 @@ import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '
 import MenuPopover from '../../components/MenuPopover';
 //
 import account from '../../_mocks_/account';
-import { clearUser } from '../../utils/helpers';
+import {clearUser, getUserData} from '../../utils/helpers';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +39,19 @@ export default function AccountPopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const [userData, setUserData] = useState({});
 
+  useEffect( () => {
+    const data = getUserData();
+    // try {
+    //
+    // } catch ( err ) {
+    //   console.log(err);
+    // }
+    if (data) {
+      setUserData(data);
+    }
+  }, []);
   const handleOpen = () => {
     setOpen(true);
   };
@@ -80,10 +92,14 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle1" noWrap>
-            {account.displayName}
+            {userData?.firstName
+              ? `${userData.firstName}  ${userData.lastName}`
+              : account.displayName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {userData?.email
+              ? `${userData.email}`
+              : account.email}
           </Typography>
         </Box>
 
