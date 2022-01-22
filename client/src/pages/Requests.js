@@ -38,8 +38,8 @@ import { getUserData } from '../utils/helpers';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
+  { id: 'company', label: 'Uploaded Document', alignRight: false },
+  { id: 'role', label: 'Requested', alignRight: false },
   { id: 'isVerified', label: 'Verified', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' }
@@ -84,7 +84,7 @@ const AccountStyle = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.grey[200]
 }));
 
-export default function User() {
+export default function Requests() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -154,11 +154,11 @@ export default function User() {
   const isUserNotFound = filteredUsers.length === 0;
 
   return (
-    <Page title="User | Minimal-UI">
+    <Page title="Requests | Minimal-UI">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Requests
           </Typography>
           <Button
             variant="contained"
@@ -166,28 +166,11 @@ export default function User() {
             to="#"
             startIcon={<Icon icon={plusFill} />}
           >
-            New User
+            New Requests
           </Button>
         </Stack>
 
         <Card />
-
-        <Card sx={{ my: 2 }}>
-          <CardHeader title="Profile" />
-          <AccountStyle>
-            <Avatar sx={{ width: 125, height: 125 }} src={account.photoURL} alt="photoURL" />
-            <Box sx={{ m: 10 }}>
-              <Typography variant="h3" sx={{ color: 'text.primary' }}>
-                {userData?.firstName
-                  ? `${userData.firstName}  ${userData.lastName}`
-                  : account.displayName}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
-              </Typography>
-            </Box>
-          </AccountStyle>
-        </Card>
 
         <Card>
           <UserListToolbar

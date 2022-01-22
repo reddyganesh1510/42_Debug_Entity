@@ -2,7 +2,7 @@
 
 const account = {
   displayName: 'Guest User',
-  email: 'tripathisudheer604@gmail.com',
+  email: 'guest@gmail.com',
   photoURL: '/static/mock-images/avatars/avatar_default_2.png'
 };
 

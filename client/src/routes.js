@@ -9,7 +9,8 @@ import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import DocUploads from './pages/DocUploads';
 import Blog from './pages/Blog';
-import User from './pages/User';
+import Requests from './pages/Requests';
+import Upload from './pages/UploadStepper';
 import NotFound from './pages/Page404';
 import Profile from './pages/Profile';
 
@@ -23,10 +24,12 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" replace /> },
         { path: 'app', element: <DashboardApp /> },
-        { path: 'user', element: <User /> },
+        { path: 'requests', element: <Requests /> },
         { path: 'profile', element: <Profile /> },
         { path: 'products', element: <Products /> },
         { path: 'documents', element: <DocUploads /> },
+        { path: 'upload', element: <Upload /> },
+
         { path: 'blog', element: <Blog /> }
       ]
     },
