@@ -16,6 +16,8 @@ import {
   FormControlLabel
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import axios from 'axios';
+import { postHelper, setToken } from '../../../utils/helpers';
 
 // ----------------------------------------------------------------------
 
@@ -35,8 +37,19 @@ export default function LoginForm() {
       remember: true
     },
     validationSchema: LoginSchema,
-    onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+    onSubmit: async (values) => {
+      const { email, password } = values;
+
+      try {
+        const res = await axios.request(postHelper({ email, password }));
+        const { data } = res;
+        setToken(data.content.token);
+        navigate('/dashboard');
+      } catch (err) {
+        console.log('Error', err, err.body);
+      }
+
+      // navigate('/dashboard', { replace: true });
     }
   });
 
