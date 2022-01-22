@@ -116,9 +116,7 @@ router.post("/getFile", [authMiddleware], async (req, res) => {
   let user = await User.findById(id);
 
   if (!user) {
-    return res
-      .status(404)
-      .json({ ...respObj, errors: [{ msg: `User not found` }] });
+    return res.status(404).json({ errors: [{ msg: `User not found` }] });
   }
   const decryptedData = decryptData({
     keyObjStr: user.key,
