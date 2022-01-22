@@ -51,8 +51,9 @@ router.post("/upload", [authMiddleware], async (req, res) => {
       user: { id },
     } = req;
     const { label } = req.body;
-    console.log(req.body);
-    const document = req.body.document;
+    // console.log(req.body);
+    const document = JSON.stringify(req.body);
+    console.log(typeof document);
 
     let user = await User.findById(id);
 
