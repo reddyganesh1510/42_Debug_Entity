@@ -17,10 +17,9 @@ contract Document{
         _;
     }
 
-    function upload(string memory id, string memory ipfs, string memory txHash) public isOwner() returns (bool) {
+    function upload(string memory id, string memory ipfs, string memory txHash) public isOwner(){
         DocumentItem memory documentItem= DocumentItem(ipfs,false); 
         users[id][txHash] = documentItem;
-        return true;
     }
 
     function validate(string memory userId,string memory txHash, bool isValid) public isOwner() returns (bool) {

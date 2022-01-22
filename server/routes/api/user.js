@@ -9,6 +9,7 @@ const { Contract, ipfs } = require("../../config/web3");
 const authMiddleware = require("../../middlewares/auth");
 const uploadMiddleware = require("../../middlewares/upload");
 const MyWalletAddress = "0x6c38De408d6a71b2F672666f203ecDAFC2A00Dea";
+// const MyWalletAddress = "0x0E365665a0f07b68847e33F7A224E6f3068bF33d";
 
 router.get("/", [authMiddleware], async (req, res) => {
   const respObj = { msg: "Get User", success: false };
@@ -39,12 +40,13 @@ router.get("/", [authMiddleware], async (req, res) => {
 });
 
 router.post("/upload", [authMiddleware], async (req, res) => {
-  const respObj = { msg: "Get User", success: false };
+  const respObj = { msg: "Upload User", success: false };
   try {
     const {
       user: { id },
-      label,
     } = req;
+    const { label, liveImage, data: userDocumentData } = req.body;
+    console.log(req.body);
     let user = await User.findById(id);
 
     if (!user) {
@@ -60,32 +62,36 @@ router.post("/upload", [authMiddleware], async (req, res) => {
           .json({ ...respObj, errors: [{ msg: err.message }] });
       }
       const reqFiles = req.files;
-      const imageURL = `/documents/docstore/${reqFiles[0]["filename"]}`;
+      console.log(reqFiles);
+      const imageUrl = `/documents/docstore/${reqFiles[0]["filename"]}`;
       const data = fs.readFileSync(reqFiles[0]["path"]);
-      ipfs
-        .add(data)
-        .then(async (response) => {
-          if (response) {
-            const { path, hash, size } = response[0];
-            // add to image collection
-            const resp = await Contract.methods
-              .upload(id, user.documents.length + 1, hash)
-              .call({ from: MyWalletAddress });
-            res.status(200).json({
-              ...respObj,
-              content: {
-                path,
-                hash,
-                size,
-              },
-            });
-          } else {
-            res.status(400).send("Error processing file");
-          }
-        })
-        .catch((err) => {
-          res.status(500).send(err.message);
-        });
+      const ipfsResponse = await ipfs.add(data);
+      const { path, hash, size } = ipfsResponse[0];
+      // add to image collection
+      const contractResponse = await Contract.methods
+        .upload(id, user.documents.length + 1, hash)
+        .send({ from: MyWalletAddress });
+      const newDocumentObj = {
+        label,
+        liveImage,
+        ipfsHash: hash,
+        ipfsAddress: `https://gateway.ipfs.io/ipfs/${hash}`,
+        transactionHash: contractResponse.transactionHash,
+        blockHash: contractResponse.blockHash,
+        blockNumber: contractResponse.blockNumber,
+        imageUrl,
+        data: userDocumentData,
+      };
+      user.documents.push(newDocumentObj);
+      await user.save();
+      res.status(200).json({
+        ...respObj,
+        content: {
+          path,
+          hash,
+          size,
+        },
+      });
     });
   } catch (error) {
     res.status(500).json({
