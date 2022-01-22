@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-import { postHelper, setToken } from '../../../utils/helpers';
+import { postHelper, setToken, setUserData } from '../../../utils/helpers';
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
@@ -24,7 +24,11 @@ export default function RegisterForm() {
       .required('First name required'),
     lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required')
+    password: Yup.string().required('Password is required'),
+    phoneNumber: Yup.string()
+      .min(10, 'Should be 10 digits long')
+      .max(12, 'Too Long!')
+      .required('Phone number required')
   });
 
   const formik = useFormik({
@@ -32,16 +36,20 @@ export default function RegisterForm() {
       firstName: '',
       lastName: '',
       email: '',
-      password: ''
+      password: '',
+      phoneNumber: ''
     },
     validationSchema: RegisterSchema,
     onSubmit: async (values) => {
-      const { firstName, lastName, email, password } = values;
+      const { firstName, lastName, email, password, phoneNumber } = values;
 
       try {
-        const res = await axios.request(postHelper({ email, password }));
+        const res = await axios.request(
+          postHelper({ email, password, firstName, lastName, mobileNo: phoneNumber })
+        );
         const { data } = res;
         setToken(data.content.token);
+        setUserData(values);
         navigate('/dashboard');
       } catch (err) {
         console.log('Error', err, err.body);
@@ -83,6 +91,16 @@ export default function RegisterForm() {
             {...getFieldProps('email')}
             error={Boolean(touched.email && errors.email)}
             helperText={touched.email && errors.email}
+          />
+
+          <TextField
+            fullWidth
+            autoComplete="tel"
+            type="text"
+            label="Phone Number"
+            {...getFieldProps('phoneNumber')}
+            error={Boolean(touched.phoneNumber && errors.phoneNumber)}
+            helperText={touched.phoneNumber && errors.phoneNumber}
           />
 
           <TextField

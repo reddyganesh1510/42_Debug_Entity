@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 //
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
+import { getUserData } from '../../utils/helpers';
 
 // ----------------------------------------------------------------------
 
@@ -34,11 +35,25 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const data = getUserData();
+
+    if (data) {
+      setUserData(data);
+    }
+  }, []);
 
   return (
     <RootStyle>
       <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
-      <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+      {/* eslint-disable-next-line no-undef */}
+      <DashboardSidebar
+        isOpenSidebar={open}
+        onCloseSidebar={() => setOpen(false)}
+        data={userData}
+      />
       <MainStyle>
         <Outlet />
       </MainStyle>
