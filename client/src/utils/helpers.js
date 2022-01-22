@@ -48,4 +48,42 @@ const clearUser = () => {
   localStorage.removeItem('auth-token');
 };
 
-module.exports = { postHelper, setToken, getToken, setUserData, getUserData, clearUser, getHelper, routes };
+const getUserType = () => {
+  const user = getUserData();
+  if(user?.firstName) {
+    if(user.email === 'admin@digiblock.com') {
+      return 'admin';
+    }
+    return  'user';
+  } else {
+    return 'guest'
+  }
+}
+
+const displayMappings =  {
+  'user' : ['dashboard','upload','profile'],
+  'admin' : ['dashboard','requests','profile'],
+  'guest' : ['login','register']
+}
+
+const shouldDisplayComponent = (componentName) => {
+  const userType = getUserType();
+
+  if(displayMappings[userType]?.includes(componentName)) {
+    return true;
+  }
+  return false;
+}
+
+module.exports = {
+  postHelper,
+  setToken,
+  getToken,
+  setUserData,
+  getUserData,
+  clearUser,
+  getHelper,
+  routes,
+  shouldDisplayComponent
+};
+

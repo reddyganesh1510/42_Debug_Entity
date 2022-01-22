@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import { NavLink as RouterLink, matchPath, useLocation } from 'react-router-dom';
@@ -7,6 +7,7 @@ import arrowIosDownwardFill from '@iconify/icons-eva/arrow-ios-downward-fill';
 // material
 import { alpha, useTheme, styled } from '@mui/material/styles';
 import { Box, List, Collapse, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
+import {getUserData, shouldDisplayComponent} from "../utils/helpers";
 
 // ----------------------------------------------------------------------
 
@@ -153,15 +154,26 @@ NavSection.propTypes = {
   navConfig: PropTypes.array
 };
 
+
+
 export default function NavSection({ navConfig, ...other }) {
   const { pathname } = useLocation();
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const data = getUserData();
+
+    if (data) {
+        setUserData(data);
+    }
+  }, []);
 
   return (
     <Box {...other}>
       <List disablePadding>
         {navConfig.map((item) => (
-          <NavItem key={item.title} item={item} active={match} />
+          shouldDisplayComponent(item.title) ? <NavItem key={item.title} item={item} active={match} /> : <></>
         ))}
       </List>
     </Box>
