@@ -38,7 +38,7 @@ import { getUserData } from '../utils/helpers';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
+  { id: 'company', label: 'Uploaded Document', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
   { id: 'isVerified', label: 'Verified', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
@@ -171,23 +171,6 @@ export default function User() {
         </Stack>
 
         <Card />
-
-        <Card sx={{ my: 2 }}>
-          <CardHeader title="Profile" />
-          <AccountStyle>
-            <Avatar sx={{ width: 125, height: 125 }} src={account.photoURL} alt="photoURL" />
-            <Box sx={{ m: 10 }}>
-              <Typography variant="h3" sx={{ color: 'text.primary' }}>
-                {userData?.firstName
-                  ? `${userData.firstName}  ${userData.lastName}`
-                  : account.displayName}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
-              </Typography>
-            </Box>
-          </AccountStyle>
-        </Card>
 
         <Card>
           <UserListToolbar
