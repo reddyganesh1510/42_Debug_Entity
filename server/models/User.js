@@ -28,8 +28,33 @@ const UserSchema = new mongoose.Schema({
   },
   documents: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Image",
+      label: {
+        type: String,
+      },
+      ipfsHash: {
+        type: String,
+      },
+      ipfsAddress: {
+        type: String,
+      },
+      transactionHash: {
+        type: String,
+      },
+      blockHash: {
+        type: String,
+      },
+      blockNumber: {
+        type: String,
+      },
+      imageUrl: {
+        type: String,
+      },
+      liveImage: {
+        type: String,
+      },
+      data: {
+        type: String,
+      },
     },
   ],
 });

@@ -3,14 +3,16 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const app = express();
-
+const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
+const fileUpload = require("express-fileupload");
 connectDB();
 
 app.use(cors());
 
 // Body Parser
-app.use(express.json({ extended: false }));
+app.use(express.json());
+app.use(fileUpload());
 
 // Make storage files publically accesible
 app.use("/documents/docstore", express.static(path.resolve("./docstore")));
