@@ -1,0 +1,13 @@
+**/.*
+**/.log*
+**/node_modules/**
+db
+mongod.conf
+mongoInstruct.md
+mongo.log
+backend/docstore
+
+# DONOT IGNORE
+!.prettierrc
+!.gitignore
+!**/.gitkeep*
