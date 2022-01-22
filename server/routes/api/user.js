@@ -70,33 +70,34 @@ router.post("/upload", [authMiddleware], async (req, res) => {
       keyObjStr: user.key,
       encryptedStr: encryptedData,
     });
-    // const ipfsResponse = await ipfs.add(data);
-    // const { path, hash, size } = ipfsResponse[0];
+    const ipfsResponse = await ipfs.add(Buffer.from(encryptedData, "hex"));
+    const { path, hash, size } = ipfsResponse[0];
+    console.log(ipfsResponse);
     // add to image collection
-    // const contractResponse = await Contract.methods
-    //   .upload(id, user.documents.length + 1, hash)
-    //   .send({ from: MyWalletAddress });
-    // const newDocumentObj = {
-    //   label,
-    //   liveImage,
-    //   ipfsHash: hash,
-    //   ipfsAddress: `https://gateway.ipfs.io/ipfs/${hash}`,
-    //   transactionHash: contractResponse.transactionHash,
-    //   blockHash: contractResponse.blockHash,
-    //   blockNumber: contractResponse.blockNumber,
-    //   imageUrl,
-    //   data: userDocumentData,
-    // };
-    // user.documents.push(newDocumentObj);
-    // await user.save();
-    // res.status(200).json({
-    //   ...respObj,
-    //   content: {
-    //     path,
-    //     hash,
-    //     size,
-    //   },
-    // });
+    const contractResponse = await Contract.methods
+      .upload(id, user.documents.length + 1, hash)
+      .send({ from: MyWalletAddress });
+    const newDocumentObj = {
+      label,
+      liveImage,
+      ipfsHash: hash,
+      ipfsAddress: `https://gateway.ipfs.io/ipfs/${hash}`,
+      transactionHash: contractResponse.transactionHash,
+      blockHash: contractResponse.blockHash,
+      blockNumber: contractResponse.blockNumber,
+      imageUrl,
+      data: userDocumentData,
+    };
+    user.documents.push(newDocumentObj);
+    await user.save();
+    res.status(200).json({
+      ...respObj,
+      content: {
+        path,
+        hash,
+        size,
+      },
+    });
     res.status(200).json({
       ...respObj,
       content: {
