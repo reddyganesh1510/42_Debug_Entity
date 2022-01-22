@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  key: { type: String },
   documents: [
     {
       label: {
@@ -44,12 +45,6 @@ const UserSchema = new mongoose.Schema({
         type: String,
       },
       blockNumber: {
-        type: String,
-      },
-      imageUrl: {
-        type: String,
-      },
-      liveImage: {
         type: String,
       },
       data: {

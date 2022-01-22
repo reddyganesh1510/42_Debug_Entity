@@ -9,6 +9,11 @@ const { Contract, ipfs } = require("../../config/web3");
 const authMiddleware = require("../../middlewares/auth");
 const uploadMiddleware = require("../../middlewares/upload");
 const MyWalletAddress = "0x6c38De408d6a71b2F672666f203ecDAFC2A00Dea";
+const {
+  generateKey,
+  encryptData,
+  decryptData,
+} = require("../../utils/cryptoAes");
 // const MyWalletAddress = "0x0E365665a0f07b68847e33F7A224E6f3068bF33d";
 
 router.get("/", [authMiddleware], async (req, res) => {
@@ -45,8 +50,10 @@ router.post("/upload", [authMiddleware], async (req, res) => {
     const {
       user: { id },
     } = req;
-    const { label, liveImage, data: userDocumentData } = req.body;
+    const { label } = req.body;
     console.log(req.body);
+    const document = req.body.document;
+
     let user = await User.findById(id);
 
     if (!user) {
@@ -55,45 +62,50 @@ router.post("/upload", [authMiddleware], async (req, res) => {
         .json({ ...respObj, errors: [{ msg: `User not found` }] });
     }
 
-    uploadMiddleware(req, res, async (err) => {
-      if (err) {
-        return res
-          .status(400)
-          .json({ ...respObj, errors: [{ msg: err.message }] });
-      }
-      const reqFiles = req.files;
-      console.log(reqFiles);
-      const imageUrl = `/documents/docstore/${reqFiles[0]["filename"]}`;
-      const data = fs.readFileSync(reqFiles[0]["path"]);
-      const ipfsResponse = await ipfs.add(data);
-      const { path, hash, size } = ipfsResponse[0];
-      // add to image collection
-      const contractResponse = await Contract.methods
-        .upload(id, user.documents.length + 1, hash)
-        .send({ from: MyWalletAddress });
-      const newDocumentObj = {
-        label,
-        liveImage,
-        ipfsHash: hash,
-        ipfsAddress: `https://gateway.ipfs.io/ipfs/${hash}`,
-        transactionHash: contractResponse.transactionHash,
-        blockHash: contractResponse.blockHash,
-        blockNumber: contractResponse.blockNumber,
-        imageUrl,
-        data: userDocumentData,
-      };
-      user.documents.push(newDocumentObj);
-      await user.save();
-      res.status(200).json({
-        ...respObj,
-        content: {
-          path,
-          hash,
-          size,
-        },
-      });
+    const encryptedData = encryptData({
+      keyObjStr: user.key,
+      dataStr: document,
+    });
+    const decryptedData = decryptData({
+      keyObjStr: user.key,
+      encryptedStr: encryptedData,
+    });
+    // const ipfsResponse = await ipfs.add(data);
+    // const { path, hash, size } = ipfsResponse[0];
+    // add to image collection
+    // const contractResponse = await Contract.methods
+    //   .upload(id, user.documents.length + 1, hash)
+    //   .send({ from: MyWalletAddress });
+    // const newDocumentObj = {
+    //   label,
+    //   liveImage,
+    //   ipfsHash: hash,
+    //   ipfsAddress: `https://gateway.ipfs.io/ipfs/${hash}`,
+    //   transactionHash: contractResponse.transactionHash,
+    //   blockHash: contractResponse.blockHash,
+    //   blockNumber: contractResponse.blockNumber,
+    //   imageUrl,
+    //   data: userDocumentData,
+    // };
+    // user.documents.push(newDocumentObj);
+    // await user.save();
+    // res.status(200).json({
+    //   ...respObj,
+    //   content: {
+    //     path,
+    //     hash,
+    //     size,
+    //   },
+    // });
+    res.status(200).json({
+      ...respObj,
+      content: {
+        encryptedData,
+        decryptedData,
+      },
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       ...respObj,
       errors: [{ msg: "Server error" }],
@@ -172,6 +184,7 @@ router.post("/register", async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     let encryptedPassword = await bcrypt.hash(password, salt);
+    const keyObjStr = generateKey();
 
     user = new User({
       email: userEmail,
@@ -180,6 +193,7 @@ router.post("/register", async (req, res) => {
       lastName,
       mobileNo,
       documents: [],
+      key: keyObjStr,
     });
     await user.save();
 
@@ -200,6 +214,7 @@ router.post("/register", async (req, res) => {
       }
     );
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       ...respObj,
       errors: [{ msg: "Server error" }],

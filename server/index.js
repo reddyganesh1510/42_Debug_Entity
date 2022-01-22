@@ -11,8 +11,8 @@ connectDB();
 app.use(cors());
 
 // Body Parser
-app.use(express.json());
-app.use(fileUpload());
+app.use(express.json({ extended: false, limit: "50mb" }));
+// app.use(fileUpload());
 
 // Make storage files publically accesible
 app.use("/documents/docstore", express.static(path.resolve("./docstore")));
