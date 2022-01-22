@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------
 
 const account = {
-  displayName: 'Guest Requests',
-  email: 'tripathisudheer604@gmail.com',
+  displayName: 'Guest User',
+  email: 'guest@gmail.com',
   photoURL: '/static/mock-images/avatars/avatar_default_2.png'
 };
 
