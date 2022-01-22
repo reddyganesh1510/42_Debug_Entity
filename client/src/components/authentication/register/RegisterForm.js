@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import axios from 'axios';
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useFormik, Form, FormikProvider } from 'formik';
@@ -9,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
+import { postHelper, setToken } from '../../../utils/helpers';
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
@@ -33,8 +35,19 @@ export default function RegisterForm() {
       password: ''
     },
     validationSchema: RegisterSchema,
-    onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+    onSubmit: async (values) => {
+      const { firstName, lastName, email, password } = values;
+
+      try {
+        const res = await axios.request(postHelper({ email, password }));
+        const { data } = res;
+        setToken(data.content.token);
+        navigate('/dashboard');
+      } catch (err) {
+        console.log('Error', err, err.body);
+      }
+
+      // navigate('/dashboard', { replace: true });
     }
   });
 
