@@ -1,7 +1,11 @@
 // material
 import { Box, Grid, Container, Typography } from '@mui/material';
+
+import { Link } from 'react-router-dom';
+
 // components
 import Page from '../components/Page';
+
 import {
   AppTasks,
   AppNewUsers,
@@ -28,7 +32,9 @@ export default function DashboardApp() {
         </Box>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={6}>
-            <AppWeeklySales />
+            <Link to="../documents" style={{ textDecoration: 'none' }}>
+              <AppWeeklySales />
+            </Link>
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
             <AppNewUsers />
