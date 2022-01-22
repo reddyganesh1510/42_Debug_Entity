@@ -40,7 +40,9 @@ export default function DashboardApp() {
             <AppNewUsers />
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
-            <AppItemOrders />
+            <Link to="../viewuploads" style={{ textDecoration: 'none' }}>
+              <AppItemOrders />
+            </Link>
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
             <AppBugReports />

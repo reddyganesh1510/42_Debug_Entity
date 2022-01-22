@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import DocUploads from './pages/DocUploads';
+import ViewUploads from './pages/ViewUploads';
 import Blog from './pages/Blog';
 import Requests from './pages/Requests';
 import Upload from './pages/UploadStepper';
@@ -29,7 +30,7 @@ export default function Router() {
         { path: 'products', element: <Products /> },
         { path: 'documents', element: <DocUploads /> },
         { path: 'upload', element: <Upload /> },
-
+        { path: 'viewuploads', element: <ViewUploads />},
         { path: 'blog', element: <Blog /> }
       ]
     },

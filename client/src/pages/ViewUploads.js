@@ -9,13 +9,13 @@ import {
   ProductList,
   ProductCartWidget,
   ProductFilterSidebar
-} from '../components/_dashboard/docUploads';
+} from '../components/_dashboard/viewUploads';
 //
-import PRODUCTS from '../_mocks_/documents';
+import PRODUCTS from '../_mocks_/viewUploads';
 
 // ----------------------------------------------------------------------
 
-export default function EcommerceShop() {
+export default function ViewUploads() {
   const [openFilter, setOpenFilter] = useState(false);
 
   const formik = useFormik({
@@ -50,7 +50,7 @@ export default function EcommerceShop() {
     <Page title="Dashboard: Products | Minimal-UI">
       <Container>
         <Typography variant="h4" sx={{ mb: 5 }}>
-          View Uploaded Documents
+          Documents
         </Typography>
 
         <ProductList products={PRODUCTS} />

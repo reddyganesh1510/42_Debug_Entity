@@ -1,4 +1,4 @@
-const baseRoute = 'http://localhost:8000/documents/api';
+const baseRoute = 'http://192.168.1.208:3000/documents/api';
 
 const routes = {
   userLogin: `${baseRoute}/user/login`,
