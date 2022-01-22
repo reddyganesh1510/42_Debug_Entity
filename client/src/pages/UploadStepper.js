@@ -93,26 +93,32 @@ export default function UploadStepper() {
     setSkipped(newSkipped);
     if (activeStep == 2) {
       let fd = new FormData();
-      let data = DocumentData;
+      let data = {
+        type: 'Aadhar Card',
+        'Aadhar No': 'aadharNoFromText',
+        Name: 'nameFromText',
+        selectedImage: 'base64'
+      };
 
-      fd.append('document', JSON.stringify(DocumentData));
       fd.append('label', DocumentData.type);
-      // fd.append('liveImage ', DocumentData.liveImage);
-      // delete data.selectedImage;
-      // delete data.liveImage;
-      // fd.append('data ', JSON.stringify(data));
+
+      const config = {
+        headers: { 'Content-Type': 'application/json' }
+      };
+      let data1 = DocumentData;
       axios
-        .post(baseurl + `api/user/upload`, fd, {
+        .post(baseurl + `documents/api/user/upload`, data1, {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            'x-auth-token':
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoiYWJjQGdtYWlsLmNvbSIsImlkIjoiNjFlYmY2Mjc5NjU2MjUxNWE0ZWVhNDBiIn0sImlhdCI6MTY0Mjg1MzkyNywiZXhwIjoxNjQzMTEzMTI3fQ.sSIWuzSYGG9Yh8hOX-_8fEYXwGziQxZJeOIalRGZMwI'
+            'Content-Type': 'application/json',
+            'x-auth-token': localStorage.getItem('auth-token')
           }
         })
         .then((res) => {
-          setmessage(res.data.message);
+          console.log(JSON.parse(res.content.decryptedData));
+          setmessage('Data uploaded successfully');
         })
         .catch((err) => {
+          setmessage('Some error occurred');
           console.log(err);
         });
     }

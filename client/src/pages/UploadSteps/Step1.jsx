@@ -114,23 +114,24 @@ export default function Step1({ DocumentData, setDocumentData, loading, setLoadi
     setLoading(true);
     setOcrState(STATUSES.PENDING);
     try {
-      await worker.load();
-      // Set the language to recognize
-      await worker.loadLanguage('eng');
-      await worker.initialize('eng');
-      const {
-        data: { text }
-      } = await worker.recognize(selectedImage);
-      await worker.terminate();
-      console.log(text);
+      // await worker.load();
+      // // Set the language to recognize
+      // await worker.loadLanguage('eng');
+      // await worker.initialize('eng');
+      // const {
+      //   data: { text }
+      // } = await worker.recognize(selectedImage);
+      // await worker.terminate();
+      // console.log(text);
 
       //   console.log(text);
-      setOCRData(selectedDocumentType, text);
+      setOCRData(selectedDocumentType, 'abd');
 
       toDataURL(URL.createObjectURL(selectedImage), function (dataUrl) {
         console.log('RESULT:', dataUrl);
         setSelectedImage(dataUrl);
       });
+
       setOcrState(STATUSES.SUCCEEDED);
       setLoading(false);
     } catch (err) {
