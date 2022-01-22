@@ -11,8 +11,22 @@ const setToken = (token) => {
   localStorage.setItem('auth-token', token);
 };
 
+const setUserData = (data) => {
+  localStorage.setItem('user-data', JSON.stringify(data));
+};
+
+const getUserData = () => {
+  const res = localStorage.getItem('user-data');
+  return JSON.parse(res);
+};
+
 const getToken = (token) => {
   localStorage.getItem('auth-token');
 };
 
-module.exports = { postHelper, setToken, getToken };
+const clearUser = () => {
+  localStorage.removeItem('user-data');
+  localStorage.removeItem('auth-token');
+};
+
+module.exports = { postHelper, setToken, getToken, setUserData, getUserData, clearUser };

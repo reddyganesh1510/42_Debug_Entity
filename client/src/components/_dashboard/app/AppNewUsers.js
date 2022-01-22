@@ -34,7 +34,7 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-const TOTAL = 1352831;
+const TOTAL = 1;
 
 export default function AppNewUsers() {
   return (
@@ -42,7 +42,7 @@ export default function AppNewUsers() {
       <IconWrapperStyle>
         <Icon icon={appleFilled} width={24} height={24} />
       </IconWrapperStyle>
-      <Typography variant="h3">{fShortenNumber(TOTAL)}</Typography>
+      <Typography variant="h4">{fShortenNumber(TOTAL)} uploaded</Typography>
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
         Public Folder
       </Typography>

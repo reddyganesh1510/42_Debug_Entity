@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import axios from 'axios';
-import { postHelper, setToken } from '../../../utils/helpers';
+import { postHelper, setToken, setUserData } from '../../../utils/helpers';
 
 // ----------------------------------------------------------------------
 
@@ -38,12 +38,13 @@ export default function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: async (values) => {
-      const { email, password } = values;
+      const { firstName, lastName, email, password } = values;
 
       try {
         const res = await axios.request(postHelper({ email, password }));
         const { data } = res;
         setToken(data.content.token);
+
         navigate('/dashboard');
       } catch (err) {
         console.log('Error', err, err.body);

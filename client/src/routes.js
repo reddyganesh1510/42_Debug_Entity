@@ -11,6 +11,7 @@ import DocUploads from './pages/DocUploads';
 import Blog from './pages/Blog';
 import User from './pages/User';
 import NotFound from './pages/Page404';
+import Profile from './pages/Profile';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ export default function Router() {
         { element: <Navigate to="/dashboard/app" replace /> },
         { path: 'app', element: <DashboardApp /> },
         { path: 'user', element: <User /> },
+        { path: 'profile', element: <Profile /> },
         { path: 'products', element: <Products /> },
         { path: 'documents', element: <DocUploads /> },
         { path: 'blog', element: <Blog /> }
