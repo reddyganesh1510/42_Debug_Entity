@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Stack, TextField, IconButton, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-import { postHelper, setToken, setUserData } from '../../../utils/helpers';
+import { postHelper, setToken, setUserData, routes } from '../../../utils/helpers';
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
@@ -45,7 +45,7 @@ export default function RegisterForm() {
 
       try {
         const res = await axios.request(
-          postHelper({ email, password, firstName, lastName, mobileNo: phoneNumber })
+          postHelper({ email, password, firstName, lastName, mobileNo: phoneNumber }, routes.userRegister)
         );
         const { data } = res;
         setToken(data.content.token);

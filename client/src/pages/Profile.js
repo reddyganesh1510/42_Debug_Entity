@@ -1,12 +1,31 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 // material
-import { Card, Avatar, Container, Typography, CardHeader, Box } from '@mui/material';
+import EmailIcon from '@iconify/icons-eva/email-outline';
+import SmartPhoneIcon from '@iconify/icons-eva/smartphone-outline';
+
+import {
+  Card,
+  Avatar,
+  Container,
+  Typography,
+  CardHeader,
+  Box,
+  ListItem,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  SliderMark
+} from '@mui/material';
 // components
 import { styled } from '@mui/material/styles';
 import Page from '../components/Page';
 
 import account from '../_mocks_/account';
 import { getUserData } from '../utils/helpers';
+import {Icon} from "@iconify/react";
+import androidFilled from "@iconify/icons-ant-design/cloud-upload-outlined";
 
 // ----------------------------------------------------------------------
 
@@ -21,9 +40,13 @@ const AccountStyle = styled('div')(({ theme }) => ({
 export default function Profile() {
   const [userData, setUserData] = useState({});
 
-  useEffect(() => {
+  useEffect( () => {
     const data = getUserData();
-
+    // try {
+    //
+    // } catch ( err ) {
+    //   console.log(err);
+    // }
     if (data) {
       setUserData(data);
     }
@@ -42,6 +65,21 @@ export default function Profile() {
                   ? `${userData.firstName}  ${userData.lastName}`
                   : account.displayName}
               </Typography>
+
+              <List>
+                <ListItem disablePadding>
+                  <ListItemButton>
+                    <ListItemIcon> <Icon icon={EmailIcon} width={30} height={30} /> </ListItemIcon>
+                    <ListItemText primary={userData.email} />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton>
+                    <ListItemIcon> <Icon icon={SmartPhoneIcon} width={30} height={30} /> </ListItemIcon>
+                    <ListItemText primary={userData.phoneNumber} />
+                  </ListItemButton>
+                </ListItem>
+              </List>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 {account.role}
               </Typography>

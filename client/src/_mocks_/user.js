@@ -19,7 +19,7 @@ const users = [...Array(24)].map((_, index) => ({
   ]),
   isVerified: faker.datatype.boolean(),
   status: sample(['active', 'banned', 'rejected']),
-  role: sample(['Verified User', 'New User'])
+  role: sample(['1 hour ago', '2 hours ago', '35 minutes ago'])
 }));
 
 export default users;
