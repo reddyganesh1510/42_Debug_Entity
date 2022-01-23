@@ -33,8 +33,9 @@ const encryptData = ({ keyObjStr = " ", dataStr = " " }) => {
   return encryptedStr;
 };
 
-const decryptData = ({ keyObjStr = " ", encryptedStr = " " }) => {
+const decryptData = ({ keyObjStr = "abc", encryptedStr = " " }) => {
   //Extract key and iv from keyObjString
+  // console.log(keyObjStr);
   const keyObj = JSON.parse(keyObjStr);
   const { key, iv } = keyObj;
 

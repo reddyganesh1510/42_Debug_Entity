@@ -44,9 +44,7 @@ import { baseurl } from 'config';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'email', label: 'Email', alignRight: false },
-  { id: 'firstName', label: 'First Name', alignRight: false },
-  { id: 'lastName', label: 'Last Name', alignRight: false },
+  { id: 'Document', label: 'Document', alignRight: false },
   { id: 'isVerified', label: 'Verified', alignRight: false },
   { id: 'view', label: 'View', alignRight: false },
   { id: '' }
@@ -97,7 +95,6 @@ const modalstyle = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 1000,
-
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -105,8 +102,6 @@ const modalstyle = {
 };
 
 export default function Requests() {
-  const [loading, setloading] = useState(false);
-
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -115,6 +110,9 @@ export default function Requests() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [userData, setUserData] = useState({});
   const [documentData, setdocumentData] = useState([]);
+  const [email, setemail] = useState('');
+  const [token, settoken] = useState('');
+  const [loading, setloading] = useState(false);
   const [modalData, setmodalData] = useState({
     documentId: '',
     email: '',
@@ -123,12 +121,12 @@ export default function Requests() {
 
   useEffect(() => {
     const data = getUserData();
+    settoken(localStorage.getItem('auth-token'));
     axios
-      .get(baseurl + 'documents/api/admin/getAllUnverified', {
+      .get(baseurl + 'documents/api/user/', {
         headers: {
           'Content-Type': 'application/json',
-          'x-auth-token':
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6eyJlbWFpbCI6ImFkbWluQGRpZ2libG9jay5jb20iLCJpZCI6IjYxZWM4NzNjNjE3OTY1MzQwNDA5YzVmZSJ9LCJpYXQiOjE2NDI4OTEwNjgsImV4cCI6MTY0MzE1MDI2OH0.aRyL63cCajSHgUl21yBqjnj2tTUvLA7kXMHBYMzg6Zk'
+          'x-auth-token': localStorage.getItem('auth-token')
         }
       })
       .then((res) => {
@@ -136,7 +134,8 @@ export default function Requests() {
         let totalData = [];
         let users = res.data.content.docs;
 
-        setdocumentData(res.data.content.docs);
+        setdocumentData(res.data.content.documents);
+        setemail(res.data.content.email);
       })
       .catch((err) => {
         console.log(err);
@@ -198,23 +197,21 @@ export default function Requests() {
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
   const isUserNotFound = filteredUsers.length === 0;
-  const handleViewDocument = (ipfsHashT, email, documentId) => {
+  const handleViewDocument = (ipfsHashT) => {
     handleOpen();
     setmodalData((prevState) => ({
       ...prevState,
-      email: email,
-      documentId: documentId
+      email: email
     }));
 
     let data = { ipfsHash: ipfsHashT, email: email };
     console.log(data);
     setloading(true);
     axios
-      .post(baseurl + 'documents/api/admin/getFile', JSON.stringify(data), {
+      .post(baseurl + 'documents/api/user/getFile', JSON.stringify(data), {
         headers: {
           'Content-Type': 'application/json',
-          'x-auth-token':
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6eyJlbWFpbCI6ImFkbWluQGRpZ2libG9jay5jb20iLCJpZCI6IjYxZWM4NzNjNjE3OTY1MzQwNDA5YzVmZSJ9LCJpYXQiOjE2NDI4OTEwNjgsImV4cCI6MTY0MzE1MDI2OH0.aRyL63cCajSHgUl21yBqjnj2tTUvLA7kXMHBYMzg6Zk'
+          'x-auth-token': token
         }
       })
       .then((res) => {
@@ -228,23 +225,7 @@ export default function Requests() {
       })
       .catch((err) => {
         setloading(false);
-        console.log(err);
-      });
-  };
-  const handleDocVerification = (email, documentId, isValid) => {
-    let data = { email: email, documentId: documentId, isValid: isValid };
-    axios
-      .post(baseurl + 'documents/api/admin/verify', JSON.stringify(data), {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token':
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6eyJlbWFpbCI6ImFkbWluQGRpZ2libG9jay5jb20iLCJpZCI6IjYxZWM4NzNjNjE3OTY1MzQwNDA5YzVmZSJ9LCJpYXQiOjE2NDI4OTEwNjgsImV4cCI6MTY0MzE1MDI2OH0.aRyL63cCajSHgUl21yBqjnj2tTUvLA7kXMHBYMzg6Zk'
-        }
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
+
         console.log(err);
       });
   };
@@ -265,65 +246,40 @@ export default function Requests() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={modalstyle}>
-          {loading ? (
-            <div id="overlay">
-              <div id="text">
-                <Container>
-                  <SpinnerInfinity
-                    size="100"
-                    thickness="125"
-                    color="rgb(0,169,85)"
-                    secondaryColor="#D3D3D3"
-                    enabled={loading}
-                  />
-                </Container>
+          <Grid container>
+            {loading ? (
+              <div id="overlay">
+                <div id="text">
+                  <Container>
+                    <SpinnerInfinity
+                      size="100"
+                      thickness="125"
+                      color="rgb(0,169,85)"
+                      secondaryColor="#D3D3D3"
+                      enabled={loading}
+                    />
+                  </Container>
+                </div>
               </div>
-            </div>
-          ) : (
-            <Grid container>
-              <Grid item lg={12}>
+            ) : (
+              <Grid item lg={6}>
                 {modalData.data.selectedImage && (
                   <div>
                     <img src={modalData.data.selectedImage} alt="scanned file" />
                   </div>
                 )}
               </Grid>
-
-              <Grid sx={{ m: 2, my: 1 }} item>
-                <h4>Name: {modalData.data.Name}</h4>
-              </Grid>
-
-              <Grid item={12}>
-                <Button
-                  sx={{ m: 2, my: 5 }}
-                  onClick={() => handleDocVerification(modalData.email, modalData.documentId, true)}
-                  variant="contained"
-                  component="span"
-                >
-                  Accept
-                </Button>
-              </Grid>
-              <Grid item={12}>
-                <Button
-                  sx={{ my: 5 }}
-                  onClick={() =>
-                    handleDocVerification(modalData.email, modalData.documentId, false)
-                  }
-                  variant="contained"
-                  component="span"
-                >
-                  Reject
-                </Button>
-              </Grid>
-            </Grid>
-          )}
+            )}
+            <Grid></Grid>
+            <Grid></Grid>
+          </Grid>
         </Box>
       </Modal>
       <Page title="Requests | Minimal-UI">
         <Container>
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
             <Typography variant="h4" gutterBottom>
-              Requests
+              Verified Documents
             </Typography>
             <Button
               variant="contained"
@@ -359,48 +315,55 @@ export default function Requests() {
                   <TableBody>
                     {documentData
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => {
+                      .map((row, index = 1) => {
                         const { firstName, lastName, email, ipfsHash, _id } = row;
 
                         return (
-                          <TableRow
-                            hover
-                            key={email}
-                            tabIndex={-1}
+                          <>
+                            {row.isValid ? (
+                              <TableRow
+                                hover
+                                key={email}
+                                tabIndex={-1}
 
-                            // selected={isItemSelected}
-                          >
-                            <TableCell padding="checkbox">
-                              <Checkbox
-                                // checked={isItemSelected}
-                                onChange={(event) => handleClick(event, firstName)}
-                              />
-                            </TableCell>
-                            {/* <TableCell component="th" scope="row" padding="none">
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={name} src={avatarUrl} />
-                              <Typography variant="subtitle2" noWrap>
-                                {name}
-                              </Typography>
-                            </Stack>
-                          </TableCell> */}
-                            <TableCell align="left">{email}</TableCell>
-                            <TableCell align="left">{firstName}</TableCell>
-                            <TableCell align="left">{lastName}</TableCell>
-
-                            <TableCell align="left">{row.doc.isVerified ? 'Yes' : 'No'}</TableCell>
-                            <TableCell align="left">
-                              <Button
-                                variant="contained"
-                                component="span"
-                                onClick={() =>
-                                  handleViewDocument(row.doc.ipfsHash, email, row.doc._id)
-                                }
+                                // selected={isItemSelected}
                               >
-                                View
-                              </Button>
-                            </TableCell>
-                          </TableRow>
+                                <TableCell padding="checkbox">
+                                  <Checkbox
+                                    // checked={isItemSelected}
+                                    onChange={(event) => handleClick(event, firstName)}
+                                  />
+                                </TableCell>
+                                {/* <TableCell component="th" scope="row" padding="none">
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                            <Avatar alt={name} src={avatarUrl} />
+                            <Typography variant="subtitle2" noWrap>
+                            {name}
+                            </Typography>
+                        </Stack>
+                        </TableCell> */}
+                                {/* <TableCell align="left">{email}</TableCell>
+                        <TableCell align="left">{firstName}</TableCell> */}
+
+                                <TableCell align="left">
+                                  {'Document ' + Number(index + 1)}
+                                </TableCell>
+
+                                <TableCell align="left">{row.isValid ? 'Yes' : 'No'}</TableCell>
+                                <TableCell align="left">
+                                  <Button
+                                    variant="contained"
+                                    component="span"
+                                    onClick={() => handleViewDocument(row.ipfsHash)}
+                                  >
+                                    View
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                              <></>
+                            )}
+                          </>
                         );
                       })}
                     {emptyRows > 0 && (

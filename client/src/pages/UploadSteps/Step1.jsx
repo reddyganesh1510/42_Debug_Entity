@@ -103,6 +103,7 @@ export default function Step1({ DocumentData, setDocumentData, loading, setLoadi
           'Driving Licence No': dLNoFromText,
           Name: nameFromTextD,
           selectedImage: selectedImage
+          
         }));
         break;
 
@@ -122,10 +123,10 @@ export default function Step1({ DocumentData, setDocumentData, loading, setLoadi
         data: { text }
       } = await worker.recognize(selectedImage);
       await worker.terminate();
-      console.log(text);
+      // console.log(text);
 
       //   console.log(text);
-      setOCRData(selectedDocumentType, text);
+  setOCRData(selectedDocumentType, text);
 
       toDataURL(URL.createObjectURL(selectedImage), function (dataUrl) {
         console.log('RESULT:', dataUrl);
@@ -161,21 +162,21 @@ export default function Step1({ DocumentData, setDocumentData, loading, setLoadi
 
   return (
     <>
-      {loading ? (
-        <div id="overlay">
-          <div id="text">
-            <Container>
-              <SpinnerInfinity
-                size="100"
-                thickness="125"
-                color="rgb(0,169,85)"
-                secondaryColor="#D3D3D3"
-                enabled={loading}
-              />
-            </Container>
-          </div>
+    {loading ? (
+      <div id="overlay">
+        <div id="text">
+          <Container>
+            <SpinnerInfinity
+              size="100"
+              thickness="125"
+              color="rgb(0,169,85)"
+              secondaryColor="#D3D3D3"
+              enabled={loading}
+            />
+          </Container>
         </div>
-      ) : (
+      </div>
+    ) : (
         <Page title="Dashboard: Products | Minimal-UI">
           <Container sx={{ mb: 5 }}>
             {/* <Stack

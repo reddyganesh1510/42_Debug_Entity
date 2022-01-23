@@ -9,6 +9,8 @@ import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import DocUploads from './pages/DocUploads';
 import Blog from './pages/Blog';
+import ViewUploads from './pages/ViewUploads';
+
 import Requests from './pages/Requests';
 import Upload from './pages/UploadStepper';
 import NotFound from './pages/Page404';
@@ -29,6 +31,7 @@ export default function Router() {
         { path: 'products', element: <Products /> },
         { path: 'documents', element: <DocUploads /> },
         { path: 'upload', element: <Upload /> },
+        { path: 'viewuploads', element: <ViewUploads /> },
 
         { path: 'blog', element: <Blog /> }
       ]

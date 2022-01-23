@@ -51,7 +51,7 @@ router.post("/upload", [authMiddleware], async (req, res) => {
       user: { id },
     } = req;
     const { label } = req.body;
-    const document = req.body.document;
+    const document = JSON.stringify(req.body);
 
     let user = await User.findById(id);
 
@@ -107,13 +107,13 @@ router.post("/upload", [authMiddleware], async (req, res) => {
 });
 
 router.post("/getFile", [authMiddleware], async (req, res) => {
-  const { ipfsHash } = req.body;
+  const { ipfsHash, email } = req.body;
   const resp = await ipfs.cat(ipfsHash);
   const encryptedData = resp.toString("hex");
   const {
     user: { id },
   } = req;
-  let user = await User.findById(id);
+  let user = await User.findOne({ email: email });
 
   if (!user) {
     return res.status(404).json({ errors: [{ msg: `User not found` }] });

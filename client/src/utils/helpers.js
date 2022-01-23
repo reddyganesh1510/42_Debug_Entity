@@ -1,12 +1,13 @@
-const baseRoute = 'http://192.168.1.208:3000/documents/api';
+const baseRoute = 'http://localhost:8000/documents/api';
 
 const routes = {
   userLogin: `${baseRoute}/user/login`,
   userRegister: `${baseRoute}/user/register`,
   userProfile: `${baseRoute}/user`,
   adminLogin: `${baseRoute}/admin/login`,
-  adminRegister: `${baseRoute}/admin/register`
-}
+  adminRegister: `${baseRoute}/admin/register`,
+  userGetDocument: `${baseRoute}/user/getFile`
+};
 
 const postHelper = (obj, route) => ({
   method: 'POST',
@@ -25,7 +26,7 @@ const getHelper = (route, token = getToken()) => ({
     'Content-Type': 'application/json',
     'x-auth-token': token
   }
-})
+});
 
 const setToken = (token) => {
   localStorage.setItem('auth-token', token);
@@ -51,30 +52,30 @@ const clearUser = () => {
 
 const getUserType = () => {
   const user = getUserData();
-  if(user?.firstName) {
-    if(user.email === 'admin@digiblock.com') {
+  if (user?.firstName) {
+    if (user.email === 'admin@digiblock.com') {
       return 'admin';
     }
-    return  'user';
+    return 'user';
   } else {
-    return 'guest'
+    return 'guest';
   }
-}
+};
 
-const displayMappings =  {
-  'user' : ['dashboard','upload','profile'],
-  'admin' : ['dashboard','requests','profile'],
-  'guest' : ['login','register']
-}
+const displayMappings = {
+  user: ['dashboard', 'upload', 'profile'],
+  admin: ['dashboard', 'requests', 'profile'],
+  guest: ['login', 'register']
+};
 
 const shouldDisplayComponent = (componentName) => {
   const userType = getUserType();
 
-  if(displayMappings[userType]?.includes(componentName)) {
+  if (displayMappings[userType]?.includes(componentName)) {
     return true;
   }
   return false;
-}
+};
 
 module.exports = {
   postHelper,
@@ -87,4 +88,3 @@ module.exports = {
   routes,
   shouldDisplayComponent
 };
-

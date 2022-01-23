@@ -92,28 +92,23 @@ export default function UploadStepper() {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
     if (activeStep == 2) {
-      let fd = new FormData();
-      let data = DocumentData;
+      let data = JSON.stringify(DocumentData);
 
-      fd.append('document', JSON.stringify(DocumentData));
-      fd.append('label', DocumentData.type);
-      // fd.append('liveImage ', DocumentData.liveImage);
-      // delete data.selectedImage;
-      // delete data.liveImage;
-      // fd.append('data ', JSON.stringify(data));
       axios
-        .post(baseurl + `api/user/upload`, fd, {
+        .post(baseurl + `documents/api/user/upload`, data, {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            'x-auth-token':
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoiYWJjQGdtYWlsLmNvbSIsImlkIjoiNjFlYmY2Mjc5NjU2MjUxNWE0ZWVhNDBiIn0sImlhdCI6MTY0Mjg1MzkyNywiZXhwIjoxNjQzMTEzMTI3fQ.sSIWuzSYGG9Yh8hOX-_8fEYXwGziQxZJeOIalRGZMwI'
+            'Content-Type': 'application/json',
+            'x-auth-token': localStorage.getItem('auth-token')
           }
         })
         .then((res) => {
-          setmessage(res.data.message);
+          if (res.status == 200) {
+            setmessage('Data uploaded successfully');
+          }
         })
         .catch((err) => {
           console.log(err);
+          setmessage('Some error occurred');
         });
     }
   };

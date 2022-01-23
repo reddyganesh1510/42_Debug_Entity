@@ -7,6 +7,11 @@ const Admin = require("../../models/Admin");
 const User = require("../../models/User");
 const adminMiddleWare = require("../../middlewares/admin");
 const { Contract, ipfs, web3 } = require("../../config/web3");
+const {
+  generateKey,
+  encryptData,
+  decryptData,
+} = require("../../utils/cryptoAes");
 
 // @route   -  POST /xcb/api/auth/admin
 // @desc    -  Login Admin
@@ -115,8 +120,8 @@ router.post("/register", async (req, res) => {
 router.post("/verify", [adminMiddleWare], async (req, res) => {
   const respObj = { msg: "Verify User By Admin", success: false };
   try {
-    const { userId, documentId, isValid } = req.body;
-    let user = await User.findById(userId);
+    const { email, documentId, isValid } = req.body;
+    let user = await User.findOne({ email: email });
 
     if (!user) {
       return res
@@ -124,11 +129,14 @@ router.post("/verify", [adminMiddleWare], async (req, res) => {
         .json({ ...respObj, errors: [{ msg: `User not found` }] });
     }
     const accounts = await web3.eth.getAccounts();
-    const documentIndex = user.documents.findIndex(
-      (item) => item._id === documentId
-    );
+    const documentIndex = user.documents.findIndex((item) => {
+      let id = item._id.toString();
+      console.log(typeof id, typeof documentId);
+      return id === documentId;
+    });
+
     const contractResponse = await Contract.methods
-      .validate(id, documentIndex + 1, isValid)
+      .validate(user._id, documentIndex + 1, isValid)
       .send({ from: accounts[0] });
     user.documents[documentIndex].isValid = isValid;
     await user.save();
@@ -138,6 +146,7 @@ router.post("/verify", [adminMiddleWare], async (req, res) => {
       content: { msg: "Document Updated Successfully" },
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       ...respObj,
       errors: [{ msg: "Server error" }],
@@ -177,14 +186,17 @@ router.get("/getAllUnverified", [adminMiddleWare], async (req, res) => {
 });
 
 router.post("/getFile", [adminMiddleWare], async (req, res) => {
-  const { ipfsHash, userId } = req.body;
-  let user = await User.findById(userId);
+  const respObj = { msg: "Get Single file", success: false };
+
+  const { ipfsHash, email } = req.body;
+  let user = await User.findOne({ email: email });
 
   if (!user) {
     return res
       .status(404)
       .json({ ...respObj, errors: [{ msg: `User not found` }] });
   }
+  // console.log(user);
   const resp = await ipfs.cat(ipfsHash);
   const encryptedData = resp.toString("hex");
   const decryptedData = decryptData({
